@@ -30,23 +30,36 @@ words_map_3 = {}
 #     for line in file:
 #         words = line.split()
 #         if words[1] in words_map_2:
-#             words_map_2[words[1]].append((words[2], words[0]))
+#             words_map_2[words[1]].append((words[2], int(words[0])))
 #         else:
-#             words_map_2[words[1]] = [(words[2], words[0])]
+#             words_map_2[words[1]] = [(words[2], int(words[0]))]
 
 with open('../poleval_3grams.txt', encoding='utf-8') as file:
     for line in file:
         words = line.split()
         if words[1] in words_map_3:
-            words_map_3[words[1]].append((words[2], words[0]))
+            if words[2] not in words_map_3[words[1]]:
+                words_map_3[words[1]].append((words[2], int(words[0])))
+            else:
+                for item in words_map_3[words[1]]:
+                    if item[0] == words[2]:
+                        item[1] += int(words[0])
+                        break
         else:
-            words_map_3[words[1]] = [(words[2], words[0])]
+            words_map_3[words[1]] = [(words[2], int(words[0]))]
 
         if len(words) == 4:
             if words[2] in words_map_3:
-                words_map_3[words[2]].add(words[3])
+                if words[3] not in words_map_3[words[2]]:
+                    words_map_3[words[2]].append((words[3], int(words[0])))
+                else:
+                    for item in words_map_3[words[2]]:
+                        if item[0] == words[3]:
+                            item[1] += int(words[0])
+                            break
             else:
-                words_map_3[words[2]] = {words[3]}
+                words_map_3[words[2]] = [(words[3], int(words[0]))]
+
 
 # choice arg is a random.choice using regular list for tas 2
 # and a choice function (defined below)
@@ -76,4 +89,5 @@ def choice(options):
 
 # task 3
 # generate_sentences(random.choice(list(words_map_2.keys())), words_map_2, choice)
+print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 generate_sentences(random.choice(list(words_map_3.keys())), words_map_3, choice)
