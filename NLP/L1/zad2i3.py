@@ -4,39 +4,47 @@ words_map_2 = {}
 words_map_3 = {}
 
 '''Reading from file for task 2'''
-# with open('../poleval_2grams.txt', encoding='utf-8') as file:
-#     for line in file:
-#         words = line.split()
-#         if words[1] in words_map_2:
-#             words_map_2[words[1]].append(words[2])
-#         else:
-#             words_map_2[words[1]] = [words[2]]
-
-# with open('../poleval_3grams.txt', encoding='utf-8') as file:
-#     for line in file:
-#         words = line.split()
-#         if words[1] in words_map_3:
-#             words_map_3[words[1]].add(words[2])
-#         else:
-#             words_map_3[words[1]] = {words[2]}
-#         if len(words) == 4:
-#             if words[2] in words_map_3:
-#                 words_map_3[words[2]].add(words[3])
-#             else:
-#                 words_map_3[words[2]] = {words[3]}
-
-'''Reading from file for task 3'''
-# with open('../poleval_2grams.txt', encoding='utf-8') as file:
-#     for line in file:
-#         words = line.split()
-#         if words[1] in words_map_2:
-#             words_map_2[words[1]].append((words[2], int(words[0])))
-#         else:
-#             words_map_2[words[1]] = [(words[2], int(words[0]))]
+with open('../poleval_2grams.txt', encoding='utf-8') as file:
+    for line in file:
+        words = line.split()
+        if int(words[0]) < 3:
+            continue
+        if words[1] in words_map_2:
+            words_map_2[words[1]].append(words[2])
+        else:
+            words_map_2[words[1]] = [words[2]]
 
 with open('../poleval_3grams.txt', encoding='utf-8') as file:
     for line in file:
         words = line.split()
+        if int(words[0]) < 3:
+            continue
+        if words[1] in words_map_3:
+            words_map_3[words[1]].add(words[2])
+        else:
+            words_map_3[words[1]] = {words[2]}
+        if len(words) == 4:
+            if words[2] in words_map_3:
+                words_map_3[words[2]].add(words[3])
+            else:
+                words_map_3[words[2]] = {words[3]}
+
+'''Reading from file for task 3'''
+with open('../poleval_2grams.txt', encoding='utf-8') as file:
+    for line in file:
+        words = line.split()
+        if int(words[0]) < 3:
+            continue
+        if words[1] in words_map_2:
+            words_map_2[words[1]].append((words[2], int(words[0])))
+        else:
+            words_map_2[words[1]] = [(words[2], int(words[0]))]
+
+with open('../poleval_3grams.txt', encoding='utf-8') as file:
+    for line in file:
+        words = line.split()
+        if int(words[0]) < 3:
+            continue
         if words[1] in words_map_3:
             if words[2] not in words_map_3[words[1]]:
                 words_map_3[words[1]].append((words[2], int(words[0])))
@@ -89,5 +97,4 @@ def choice(options):
 
 # task 3
 # generate_sentences(random.choice(list(words_map_2.keys())), words_map_2, choice)
-print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-generate_sentences(random.choice(list(words_map_3.keys())), words_map_3, choice)
+# generate_sentences(random.choice(list(words_map_3.keys())), words_map_3, choice)
