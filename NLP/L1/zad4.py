@@ -6,7 +6,7 @@ trigram = {}
 
 with open('../poleval_2grams.txt', encoding='utf-8') as file:
     for i, line in enumerate(file):
-        if i < 2000:
+        if i < 1000000:
             words = line.split()
             bigram[(words[1], words[2])] = int(words[0])
         else:
@@ -14,15 +14,19 @@ with open('../poleval_2grams.txt', encoding='utf-8') as file:
 
 with open('../poleval_3grams.txt', encoding='utf-8') as file:
     for i, line in enumerate(file):
-        if i < 2000:
+        if i < 1000000:
             words = line.split()
-            trigram[(words[1], words[2], words[3])] = int(words[0])
+            if len(words) > 3:
+                trigram[(words[1], words[2], words[3])] = int(words[0])
+            else:
+                bigram[(words[1], words[2])] = int(words[0])
         else:
             break
 
 examples = [
-    'Nastąpiło przedawnienie pewnych ustalonych skali i obszarów lasów.',
+    'Nastąpiło przedawnienie pewnych ustalonych dokumentów.',
     'Premiowanie beneficjentów fundacji przebiegło pomyślnie.',
+    'Poszedłem do kina ze znajomymi.'
 ]
 
 for item in examples:
@@ -34,9 +38,9 @@ for item in examples:
         score = 0
         for i in range(len(option) - 1):
             if (option[i], option[i+1]) in bigram:
-                score += bigram[(option[i], option[i+1])]
+                score += bigram[(option[i], option[i+1])] * 2
             if i < len(option) - 2 and (option[i], option[i+1], option[i+2]) in trigram:
-                score += trigram[(option[i], option[i+1], option[i+2])] * 10
+                score += trigram[(option[i], option[i+1], option[i+2])] * 3
         queue.put((-score, ' '.join(option)))
 
     for i in range(10):

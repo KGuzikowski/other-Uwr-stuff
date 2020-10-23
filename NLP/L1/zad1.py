@@ -63,5 +63,5 @@ for i, item in enumerate(corpus_limited_to_tokenize):
 max_match_words_intersection_error /= len(corpus_limited_to_tokenize)
 max_match_reverse_words_intersection_error /= len(corpus_limited_to_tokenize)
 
-print(f'MaxMatch words intersection error: {max_match_words_intersection_error}')
-print(f'MaxMatch reverse words intersection error: {max_match_reverse_words_intersection_error}')
+print(f'MaxMatch words intersection accuracy: {max_match_words_intersection_error}')
+print(f'MaxMatch reverse words intersection accuracy: {max_match_reverse_words_intersection_error}')

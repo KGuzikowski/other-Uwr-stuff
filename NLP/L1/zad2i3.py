@@ -41,10 +41,10 @@ with open('../poleval_2grams.txt', encoding='utf-8') as file:
             words_map_2[words[1]] = [(words[2], int(words[0]))]
 
 with open('../poleval_3grams.txt', encoding='utf-8') as file:
-    for line in file:
+    for i, line in enumerate(file):
         words = line.split()
-        if int(words[0]) < 3:
-            continue
+        if i > 500000:
+            break
         if words[1] in words_map_3:
             if words[2] not in words_map_3[words[1]]:
                 words_map_3[words[1]].append((words[2], int(words[0])))
@@ -86,7 +86,7 @@ def generate_sentences(word, words_map, choice):
 def choice(options):
     choose_from = []
     for item in options:
-        for _ in item[1]:
+        for _ in range(item[1]):
             choose_from.append(item[0])
     return random.choice(choose_from)
 
