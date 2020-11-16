@@ -2,8 +2,9 @@ KCK/
 SO/
 MDM/
 *.out
+*/.idea
 NLP/poleval_2grams.txt
 NLP/poleval_3grams.txt
 NLP/polish_corpora.txt
 NLP/L1/polish_corpora_limited.txt
-*/.idea
+NLP/L2/dane_pozytywizm/
