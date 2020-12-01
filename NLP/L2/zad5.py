@@ -19,14 +19,14 @@ for word in WORDS:
     collocations[word] = []
     bigram[word] = []
 
-with open('./data_for_task_5.txt', encoding='utf-8') as file:
+with open('./unigram.txt', encoding='utf-8') as file:
     for line in file:
-        for word in WORDS:
-            if word in line:
-                qty = int(line.split()[0]) + 1
-                corpus_size += qty
-                WORDS_QTY[word] = qty
-                all_words_qty_with_alpha_sum += qty ** alpha
+        data = line.split()
+        qty = int(data[0])
+        corpus_size += qty
+        qty += 1
+        WORDS_QTY[data[1]] = qty
+        all_words_qty_with_alpha_sum += qty ** alpha
 
 
 with open('../poleval_2grams.txt', encoding='utf-8') as file:
@@ -34,8 +34,8 @@ with open('../poleval_2grams.txt', encoding='utf-8') as file:
         data = line.split()
         bigrams_qty += 1
         for word in WORDS:
-            if word in data:
-                data[0] = int(data[0])
+            if word == data[1]:
+                data[0] = int(data[0]) + 1
                 bigram[word].append(data)
 
 with open('./supertags.txt', encoding='utf-8') as file:
@@ -71,18 +71,14 @@ for word in WORDS:
     PSM[word] = []
     GRAMMATICAL_AND_WORD[word] = []
     CM[word] = []
-    CM2[word] = []
     data = sorted(bigram[word], key=itemgetter(0), reverse=True)
     for bigram_elem in data:
-        candidate = bigram_elem[2] if word == bigram_elem[1] else bigram_elem[1]
+        candidate = bigram_elem[2]
         if len(candidate) > 3 and candidate not in forbidden:
             # PPMI
             p_w1 = calculate_word_prob(bigram_elem[1])
             p_w2 = calculate_word_prob(bigram_elem[2])
-            pmi = max(
-                0,
-                log((bigram_elem[0] + 1) / ((WORDS_QTY[bigram_elem[1]] if bigram_elem[1] in WORDS_QTY else 1) * p_w1 * p_w2))
-            )
+            pmi = log((bigram_elem[0] / (WORDS_QTY[bigram_elem[1]] if bigram_elem[1] in WORDS_QTY else 1)) * p_w1 * p_w2)
 
             # Poisson-Stirling Approximation
             c_x = WORDS_QTY[bigram_elem[1]] if bigram_elem[1] in WORDS_QTY else 1
@@ -112,92 +108,65 @@ for word in WORDS:
             f2 = (c_x * c_y) / corpus_size
             cm = f / f2
 
-            if word == bigram_elem[1]:
-                bonus_pionts = is_the_same_tag(word, bigram_elem[2])
-                pmi += bonus_pionts
-                psm_one += bonus_pionts
-                PPMI[word].append((bigram_elem[2], pmi))
-                PSM[word].append((bigram_elem[2], psm_one))
-                GRAMMATICAL_AND_WORD[word].append((bigram_elem[2], g_a_w))
-                CM[word].append((bigram_elem[2], cm))
-                CM2[word].append((bigram_elem[2], cm + bonus_pionts))
-            else:
-                bonus_pionts = is_the_same_tag(word, bigram_elem[1])
-                pmi += bonus_pionts
-                psm_one += bonus_pionts
-                PPMI[word].append((bigram_elem[1], pmi))
-                PSM[word].append((bigram_elem[1], psm_one))
-                GRAMMATICAL_AND_WORD[word].append((bigram_elem[1], g_a_w))
-                CM[word].append((bigram_elem[1], cm))
-                CM2[word].append((bigram_elem[1], cm + bonus_pionts))
+            PPMI[word].append((bigram_elem[2], pmi))
+            PSM[word].append((bigram_elem[2], psm_one))
+            GRAMMATICAL_AND_WORD[word].append((bigram_elem[2], g_a_w))
+            CM[word].append((bigram_elem[2], cm))
 
 
-for word in WORDS:
-    ppmi_data = sorted(PPMI[word], key=itemgetter(1), reverse=True)
-    psm_data = sorted(PSM[word], key=itemgetter(1), reverse=True)
-    gaw_data = sorted(GRAMMATICAL_AND_WORD[word], key=itemgetter(1), reverse=True)
-    cm_data = sorted(CM[word], key=itemgetter(1), reverse=True)
-    cm2_data = sorted(CM2[word], key=itemgetter(1), reverse=True)
+with open('./zad5_results.txt', 'w') as file:
+    for word in WORDS:
+        ppmi_data = sorted(PPMI[word], key=itemgetter(1), reverse=True)
+        psm_data = sorted(PSM[word], key=itemgetter(1), reverse=True)
+        gaw_data = sorted(GRAMMATICAL_AND_WORD[word], key=itemgetter(1), reverse=True)
+        cm_data = sorted(CM[word], key=itemgetter(1), reverse=True)
 
-    print(f'{word}:')
-    print('PPMI: ', end='')
-    i = 0
-    best = []
-    for w in ppmi_data:
-        if i == 10:
-            break
-        if w[0] in best:
-            continue
-        best.append(w[0])
-        print(f'{w[0]}, ', end='')
-        i += 1
-    print('')
-    print('PSM: ', end='')
-    i = 0
-    best = []
-    for w in psm_data:
-        if i == 10:
-            break
-        if w[0] in best:
-            continue
-        best.append(w[0])
-        print(f'{w[0]}, ', end='')
-        i += 1
-    print('')
-    print('Grammatical and word collocations: ', end='')
-    i = 0
-    best = []
-    for w in gaw_data:
-        if i == 10:
-            break
-        if w[0] in best:
-            continue
-        best.append(w[0])
-        print(f'{w[0]}, ', end='')
-        i += 1
-    print('')
-    print('My own idea: ', end='')
-    i = 0
-    best = []
-    for w in cm_data:
-        if i == 10:
-            break
-        if w[0] in best:
-            continue
-        best.append(w[0])
-        print(f'{w[0]}, ', end='')
-        i += 1
-    print('')
-    print('My own idea with bonus points: ', end='')
-    i = 0
-    best = []
-    for w in cm2_data:
-        if i == 10:
-            break
-        if w[0] in best:
-            continue
-        best.append(w[0])
-        print(f'{w[0]}, ', end='')
-        i += 1
-    print('')
-    print('-' * 30)
+        file.write(f'{word}:\n')
+        file.write('PPMI: ')
+        i = 0
+        best = []
+        for w in ppmi_data:
+            if i == 10:
+                break
+            if w[0] in best:
+                continue
+            best.append(w[0])
+            file.write(f'{w[0]}, ')
+            i += 1
+        file.write('\n')
+        file.write('PSM: ')
+        i = 0
+        best = []
+        for w in psm_data:
+            if i == 10:
+                break
+            if w[0] in best:
+                continue
+            best.append(w[0])
+            file.write(f'{w[0]}, ')
+            i += 1
+        file.write('\n')
+        file.write('Grammatical and word collocations: ')
+        i = 0
+        best = []
+        for w in gaw_data:
+            if i == 10:
+                break
+            if w[0] in best:
+                continue
+            best.append(w[0])
+            file.write(f'{w[0]}, ')
+            i += 1
+        file.write('\n')
+        file.write('My own idea: ')
+        i = 0
+        best = []
+        for w in cm_data:
+            if i == 10:
+                break
+            if w[0] in best:
+                continue
+            best.append(w[0])
+            file.write(f'{w[0]}, ')
+            i += 1
+        file.write('\n' + '-'*30 + '\n')
