@@ -98,7 +98,7 @@ for word in WORDS:
             My own idea:
             f(xy) - qty of bigram
             f2(xy) - estimated qty of bigram:
-                f2(xy) = cnt(x) * cnt(x) / N
+                f2(xy) = cnt(x) * cnt(y) / N
             cm - collocation metric
             cm = f/f2
             """
