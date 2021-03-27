@@ -3,57 +3,61 @@
 #include <stdint.h>
 #include <string.h>
 
-#define size (int)10e6
+#define size ((int)1e6 + 1)
 
-uint32_t N, D[size] = {0}, D2[size] = {0};
+int N, *D, *D2;
 
-int compare (const void * a, const void * b) {
-    uint32_t _a = *(int*)a;
-    uint32_t _b = *(int*)b;
-    if (_a < _b) return -1;
-    else if (_a == _b) return 0;
-    else return 1;
-}
-
-uint32_t max (uint32_t a, uint32_t b) {
+static inline int max (int a, int b) {
     if (a > b) return a;
     else if (b > a) return b;
     else return a;
 }
 
-void max_equal_sum_or_smallest_diff(uint32_t arr[]) {
-    for (uint32_t i = 0; i < N; i++) {
-        for (uint32_t j = 0; j < size; j++) {
-            uint32_t s = D[j] + arr[i];
+static inline void max_equal_sum_or_smallest_diff(int arr[]) {
+    memset(D, -1, size * sizeof(int));
+    memset(D2, -1, size * sizeof(int));
+    D[0] = 0;
+    D2[0] = 0;
+    int max_diff = 0, new_diff = 0;
 
-            uint32_t abs_val = abs(j - arr[i]);
-            D2[abs_val] = max(D2[abs_val], s);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j <= max_diff; j++) {
+            if (D[j] == -1) continue;
+            int s = D[j] + arr[i];
 
-            abs_val = j + arr[i];
-            D2[abs_val] = max(D2[abs_val], s);
+            int new_idx = abs((int)(j - arr[i]));
+            D2[new_idx] = max(D2[new_idx], s);
+
+            new_idx = j + arr[i];
+            
+            if (new_idx > max_diff)
+                new_diff = new_idx;
+
+            D2[new_idx] = max(D2[new_idx], s);
         }
-        memcpy(D, D2, size * sizeof(uint32_t));
+        max_diff = new_diff;
+        memcpy(D, D2, size * sizeof(int));
     }
 }
 
 int main() {
+    D = malloc(size * sizeof(int));
+    D2 = malloc(size * sizeof(int));
+
     scanf("%d", &N);
 
-    uint32_t arr[N];
-    for (uint32_t i = 0; i < N; i++)
+    int arr[N];
+    for (int i = 0; i < N; i++)
         scanf("%d", &arr[i]);
 
-    qsort(arr, N, sizeof(uint32_t), compare);
     max_equal_sum_or_smallest_diff(arr);
 
-    uint32_t a = D[0];
-    if (D[0] != 0) {
-        printf("TAK\n");
-        printf("%d", D[0] / 2);
+    if (D[0] > 0) {
+        printf("TAK\n%d", D[0] / 2);
     } else {
         printf("NIE\n");
-        for (uint32_t i = 1; i < size; i++)
-            if (D[i] != 0) {
+        for (int i = 1; i < size; i++)
+            if (D[i] != -1 && i != D[i]) {
                 printf("%d", i);
                 break;
             }
