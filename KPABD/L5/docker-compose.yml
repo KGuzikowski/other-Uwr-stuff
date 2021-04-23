@@ -7,7 +7,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /home/dawid/Desktop/UWR/KPAZBD/lista06/mongodb/database:/data/db
+      - /home/guzik/Documents/other-Uwr-stuff/KPABD/L5/database:/data/db
     ports:
       - 27017:27017
     restart: unless-stopped

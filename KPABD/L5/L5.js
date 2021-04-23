@@ -110,7 +110,7 @@ db.books.insertMany([
 
 // 1. use db.books.find().pretty() to list the results
 
-// TASK 3:
+// TASK 4:
 
 // a) Get full documents list, sorted in an explicit order,
 //    and limited to the middle 2 items (select a specific page).
